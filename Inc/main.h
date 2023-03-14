@@ -59,6 +59,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define OPERATION1_Pin GPIO_PIN_13
 #define OPERATION1_GPIO_Port GPIOC
+#define LED_ON_Pin GPIO_PIN_0
+#define LED_ON_GPIO_Port GPIOA
 #define WIFI_CHIP_EN_Pin GPIO_PIN_4
 #define WIFI_CHIP_EN_GPIO_Port GPIOA
 #define WIFI_WAKEUP_Pin GPIO_PIN_5
@@ -80,8 +82,6 @@ void Error_Handler(void);
 #define FAN_CONTROL_GPIO_Port GPIOB
 #define OPERATION3_Pin GPIO_PIN_12
 #define OPERATION3_GPIO_Port GPIOB
-#define LED_ON_Pin GPIO_PIN_13
-#define LED_ON_GPIO_Port GPIOB
 #define IRQN_USBC_Pin GPIO_PIN_15
 #define IRQN_USBC_GPIO_Port GPIOB
 #define IRQN_USBC_EXTI_IRQn EXTI15_10_IRQn
@@ -99,6 +99,7 @@ void Error_Handler(void);
 #define IRQ_SENSOR_EXTI_IRQn EXTI9_5_IRQn
 #define OPERATION2_Pin GPIO_PIN_9
 #define OPERATION2_GPIO_Port GPIOB
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
