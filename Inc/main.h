@@ -74,8 +74,10 @@ void Error_Handler(void);
 #define IRQ_POWER_SUPPLY_EXTI_IRQn EXTI0_IRQn
 #define IRQN_WIFI_Pin GPIO_PIN_1
 #define IRQN_WIFI_GPIO_Port GPIOB
+#define IRQN_WIFI_EXTI_IRQn EXTI1_IRQn
 #define IRQ_OFF_Pin GPIO_PIN_2
 #define IRQ_OFF_GPIO_Port GPIOB
+#define IRQ_OFF_EXTI_IRQn EXTI2_IRQn
 #define WIFI_RESET_N_Pin GPIO_PIN_10
 #define WIFI_RESET_N_GPIO_Port GPIOB
 #define FAN_CONTROL_Pin GPIO_PIN_11
