@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "name": "Cortex Debug",
+            "type": "cortex-debug",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "executable": "./build/L433RC.elf",
+            "servertype": "openocd",
+            "device": "STM32L433RC",
+            "configFiles": [
+                "interface/stlink.cfg",
+                "target/stm32l4x.cfg"
+            ]
+        }
+    ],
+    "version": "2.0.0"
+}

@@ -61,7 +61,7 @@ Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_spi_ex.c \
 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.c \
 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.c \
 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rtc.c \
-Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rtc_ex.c
+Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rtc_ex.c \
 Src/main.c \
 Src/usart.c \
 Src/rtc.c \
@@ -69,6 +69,30 @@ Src/tim.c \
 Src/gpio.c \
 Src/i2c.c \
 Src/spi.c \
+Drivers/winc1500/host_drv/bsp/source/nm_bsp_stm32.c \
+Drivers/winc1500/host_drv/bus_wrapper/source/nm_bus_wrapper_stm32.c \
+Drivers/winc1500/host_drv/common/source/nm_common.c \
+Drivers/winc1500/host_drv/driver/source/m2m_ate_mode.c \
+Drivers/winc1500/host_drv/driver/source/m2m_crypto.c \
+Drivers/winc1500/host_drv/driver/source/m2m_hif.c \
+Drivers/winc1500/host_drv/driver/source/m2m_ota.c \
+Drivers/winc1500/host_drv/driver/source/m2m_periph.c \
+Drivers/winc1500/host_drv/driver/source/m2m_ssl.c \
+Drivers/winc1500/host_drv/driver/source/m2m_wifi.c \
+Drivers/winc1500/host_drv/driver/source/nmasic.c \
+Drivers/winc1500/host_drv/driver/source/nmbus.c \
+Drivers/winc1500/host_drv/driver/source/nmdrv.c \
+Drivers/winc1500/host_drv/driver/source/nmi2c.c \
+Drivers/winc1500/host_drv/driver/source/nmspi.c \
+Drivers/winc1500/host_drv/driver/source/nmuart.c \
+Drivers/winc1500/host_drv/socket/source/socket.c \
+Drivers/winc1500/host_drv/spi_flash/source/flexible_flash.c \
+Drivers/winc1500/host_drv/spi_flash/source/spi_flash.c \
+Src/callbacks.c \
+Src/winc_callbacks.c \
+Src/winc.c \
+Src/power.c \
+Src/syscalls.c
 # ASM sources
 ASM_SOURCES =  \
 startup_stm32l433xx.s
@@ -128,7 +152,8 @@ C_INCLUDES =  \
 -IDrivers/STM32L4xx_HAL_Driver/Inc \
 -IDrivers/STM32L4xx_HAL_Driver/Inc/Legacy \
 -IDrivers/CMSIS/Device/ST/STM32L4xx/Include \
--IDrivers/CMSIS/Include
+-IDrivers/CMSIS/Include \
+-IDrivers/winc1500/host_drv
 
 
 # compile gcc flags

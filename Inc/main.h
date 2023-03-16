@@ -31,6 +31,9 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "../config.h"
+#include <string.h>
+#include <stdio.h>
 
 /* USER CODE END Includes */
 
@@ -103,7 +106,15 @@ void Error_Handler(void);
 #define OPERATION2_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
+#define DEBUG_MODE
 
+#ifdef __GNUC__
+/* With GCC/RAISONANCE, small printf (option LD Linker->Libraries->Small printf
+   set to 'Yes') calls __io_putchar() */
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif /* __GNUC__ */
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

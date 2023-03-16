@@ -27,7 +27,11 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "driver/include/m2m_wifi.h"
+#include "socket/include/socket.h"
+#include "winc_callbacks.h"
+#include "winc.h"
+#include "power.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -96,12 +100,39 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
+  psu_init();
+  HAL_RTC_DeactivateAlarm(&hrtc, RTC_ALARM_A);
+  /* WIFI */
+  /* ugly fix for not getting stuck in infinite loop : wait_for_bootrom() - nmasic.c:410 */
+  nm_read_reg(0x1024);
+  winc_init();
+  print_mac();
+
+  struct sockaddr_in addr;
+  socket_init(&addr);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+     /* Handle the app state machine plus the WINC event handler */
+    while (m2m_wifi_handle_events(NULL) != M2M_SUCCESS)
+    {
+    }
+
+    if (gconnected == CONNECTED)
+    {
+      connect_to_server(&addr);
+    }
+    else if (gconnected == NOT_CONNECTED)
+    {
+      connect_to_ap();
+    }
+    printf("hey\r\n");
+    HAL_Delay(20); /* prevent 100% cpu usage */
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -166,7 +197,14 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+PUTCHAR_PROTOTYPE
+{
+  /* Place your implementation of fputc here */
+  /* e.g. write a character to the USART3 and Loop until the end of transmission */
+  HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, 0xFFFF);
 
+  return ch;
+}
 /* USER CODE END 4 */
 
 /**
