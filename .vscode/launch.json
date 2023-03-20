@@ -5,7 +5,7 @@
             "type": "cortex-debug",
             "request": "launch",
             "cwd": "${workspaceFolder}",
-            "executable": "./build/L433RC.elf",
+            "executable": "./build/afry_lia.elf",
             "servertype": "openocd",
             "device": "STM32L433RC",
             "configFiles": [
