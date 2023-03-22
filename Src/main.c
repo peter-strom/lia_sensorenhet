@@ -92,7 +92,6 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  
   MX_GPIO_Init();
   MX_I2C1_Init();
   MX_SPI1_Init();
@@ -100,19 +99,19 @@ int main(void)
   MX_RTC_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  printf("test\r\n");
+  printf("----->test\r\n");
   psu_init();
   
   HAL_RTC_DeactivateAlarm(&hrtc, RTC_ALARM_A);
   /* WIFI */
   /* ugly fix for not getting stuck in infinite loop : wait_for_bootrom() - nmasic.c:410 */
-  nm_bsp_reset();
-  //nm_read_reg(0x1024);
-  //winc_init();
-  //print_mac();
+ 
+  nm_read_reg(0x1024);
+  winc_init();
+  print_mac();
 
   struct sockaddr_in addr;
-  //socket_init(&addr);
+  socket_init(&addr);
 
   /* USER CODE END 2 */
 
@@ -121,7 +120,7 @@ int main(void)
   while (1)
   {
      /* Handle the app state machine plus the WINC event handler */
-    /*
+    
     while (m2m_wifi_handle_events(NULL) != M2M_SUCCESS)
     {
     }
@@ -134,7 +133,7 @@ int main(void)
     {
       connect_to_ap();
     }
-    */
+    
     HAL_GPIO_WritePin(LED_ON_GPIO_Port, LED_ON_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(LED_ERROR_GPIO_Port, LED_ERROR_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(OPERATION1_GPIO_Port, OPERATION1_Pin, GPIO_PIN_RESET);
@@ -142,6 +141,7 @@ int main(void)
     HAL_GPIO_WritePin(OPERATION3_GPIO_Port, OPERATION3_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(FAN_CONTROL_GPIO_Port, FAN_CONTROL_Pin, GPIO_PIN_RESET);
+    
     printf("reset\r\n");
     HAL_Delay(1000);
     HAL_GPIO_WritePin(LED_ON_GPIO_Port, LED_ON_Pin, GPIO_PIN_SET);
@@ -151,6 +151,7 @@ int main(void)
     HAL_GPIO_WritePin(OPERATION3_GPIO_Port, OPERATION3_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(FAN_CONTROL_GPIO_Port, FAN_CONTROL_Pin, GPIO_PIN_SET);
+   
     printf("set\r\n");
     HAL_Delay(1000);
 
@@ -187,13 +188,9 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_LSE
-                              |RCC_OSCILLATORTYPE_MSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.LSEState = RCC_LSE_ON;
-  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
-  RCC_OscInitStruct.MSIState = RCC_MSI_ON;
-  RCC_OscInitStruct.MSICalibrationValue = 0;
-  RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
@@ -204,7 +201,7 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_MSI;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSE;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
@@ -213,10 +210,6 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-
-  /** Enable MSI Auto calibration
-  */
-  HAL_RCCEx_EnableMSIPLLMode();
 }
 
 /* USER CODE BEGIN 4 */

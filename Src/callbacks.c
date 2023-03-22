@@ -27,7 +27,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
   if (GPIO_Pin == IRQ_OFF_Pin) // EXTI2
   {
-    power_off_isr(REQUIRED_BUTTON_PRESS_TIME_MS);
+    printf("poweroff callbacl");
+    //power_off_isr(REQUIRED_BUTTON_PRESS_TIME_MS);
   }
 
   if (GPIO_Pin == IRQ_SENSOR_RESET_UPDATE_Pin) // EXTI4
