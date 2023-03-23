@@ -117,6 +117,7 @@ static uint16_t measure_active_time(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
  */
 static void power_off(void)
 {
+  HAL_GPIO_WritePin(LED_ON_GPIO_Port, LED_ON_Pin, GPIO_PIN_RESET);
   // Configure wake-up features
   // WKUP1(PA0) - active high, WKUP4(PA2) - active low, pull-up
   PWR->PUCRA = PWR_PUCRA_PA2;                             // Set pull-ups for standby modes
