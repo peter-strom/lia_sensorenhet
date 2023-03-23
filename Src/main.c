@@ -99,6 +99,7 @@ int main(void)
   MX_RTC_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
+  HAL_GPIO_WritePin(LED_ON_GPIO_Port, LED_ON_Pin, GPIO_PIN_SET);
   printf("----->test\r\n");
   psu_init();
   
@@ -112,7 +113,9 @@ int main(void)
 
   struct sockaddr_in addr;
   socket_init(&addr);
+  uint8_t rxBuff[12];
 
+  HAL_UART_Receive_IT(&huart2, rxBuff, 1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -133,8 +136,12 @@ int main(void)
     {
       connect_to_ap();
     }
-    
-    HAL_GPIO_WritePin(LED_ON_GPIO_Port, LED_ON_Pin, GPIO_PIN_RESET);
+
+
+  
+
+  
+    /*
     HAL_GPIO_WritePin(LED_ERROR_GPIO_Port, LED_ERROR_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(OPERATION1_GPIO_Port, OPERATION1_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(OPERATION2_GPIO_Port, OPERATION2_Pin, GPIO_PIN_RESET);
@@ -142,9 +149,8 @@ int main(void)
     HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(FAN_CONTROL_GPIO_Port, FAN_CONTROL_Pin, GPIO_PIN_RESET);
     
-    printf("reset\r\n");
+    //printf("reset\r\n");
     HAL_Delay(1000);
-    HAL_GPIO_WritePin(LED_ON_GPIO_Port, LED_ON_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(LED_ERROR_GPIO_Port, LED_ERROR_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(OPERATION1_GPIO_Port, OPERATION1_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(OPERATION2_GPIO_Port, OPERATION2_Pin, GPIO_PIN_SET);
@@ -152,9 +158,9 @@ int main(void)
     HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(FAN_CONTROL_GPIO_Port, FAN_CONTROL_Pin, GPIO_PIN_SET);
    
-    printf("set\r\n");
+    //printf("set\r\n");
     HAL_Delay(1000);
-
+    */
     HAL_Delay(20); /* prevent 100% cpu usage */
 
     /* USER CODE END WHILE */
