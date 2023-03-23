@@ -95,14 +95,15 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc)
 #endif
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 
-  HAL_UART_Receive_IT(&huart2, rxBuff, 1); 
-  printf("recieved by uart: %d \r\n",rxBuff[0]);
-  if(rxBuff[0] == 49)
+  HAL_UART_Receive_IT(&huart2, rxBuff, 1);
+#ifdef DEBUG_MODE
+  //printf("recieved by uart: %d \r\n", rxBuff[0]);
+#endif
+  if (rxBuff[0] == 49) // test on
   {
-    printf("->enable_outputs_test_mode\r\n");
     HAL_GPIO_WritePin(LED_ON_GPIO_Port, LED_ON_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(LED_ERROR_GPIO_Port, LED_ERROR_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(OPERATION1_GPIO_Port, OPERATION1_Pin, GPIO_PIN_SET);
@@ -111,9 +112,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(FAN_CONTROL_GPIO_Port, FAN_CONTROL_Pin, GPIO_PIN_SET);
   }
-  else if (rxBuff[0] == 48)
+  else if (rxBuff[0] == 48) // test off
   {
-    printf("->disable_outputs_test_mode\r\n");
     HAL_GPIO_WritePin(LED_ON_GPIO_Port, LED_ON_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(LED_ERROR_GPIO_Port, LED_ERROR_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(OPERATION1_GPIO_Port, OPERATION1_Pin, GPIO_PIN_RESET);
@@ -122,11 +122,19 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(FAN_CONTROL_GPIO_Port, FAN_CONTROL_Pin, GPIO_PIN_RESET);
   }
-  else if (rxBuff[0] == 50)
+  else if (rxBuff[0] == 50) // test reset
   {
-    printf("->test_mode_done\r\n");
     HAL_GPIO_WritePin(LED_ON_GPIO_Port, LED_ON_Pin, GPIO_PIN_SET);
   }
+  else if (rxBuff[0] == 51) // irq-sensor set, shuld be trigged by gpio-interrupt EXTI9_5
+  {
+    #ifdef DEBUG_MODE
+      printf("sensor_alarm!\r\n");
+    #endif
+    if (resetUpdateButton == UPDATE_SETTINGS)
+    {
+      resetUpdateButton = SENSOR_RESET;
 
+    }
+  }
 }
-
