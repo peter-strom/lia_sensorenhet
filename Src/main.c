@@ -32,6 +32,7 @@
 #include "winc_callbacks.h"
 #include "winc.h"
 #include "power.h"
+#include "eeprom.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -120,10 +121,12 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  i2c_test();
   while (1)
   {
      /* Handle the app state machine plus the WINC event handler */
-    
+    /*
     while (m2m_wifi_handle_events(NULL) != M2M_SUCCESS)
     {
     }
@@ -136,31 +139,9 @@ int main(void)
     {
       connect_to_ap();
     }
-
-
-  
-
-  
-    /*
-    HAL_GPIO_WritePin(LED_ERROR_GPIO_Port, LED_ERROR_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(OPERATION1_GPIO_Port, OPERATION1_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(OPERATION2_GPIO_Port, OPERATION2_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(OPERATION3_GPIO_Port, OPERATION3_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(FAN_CONTROL_GPIO_Port, FAN_CONTROL_Pin, GPIO_PIN_RESET);
-    
-    //printf("reset\r\n");
-    HAL_Delay(1000);
-    HAL_GPIO_WritePin(LED_ERROR_GPIO_Port, LED_ERROR_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(OPERATION1_GPIO_Port, OPERATION1_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(OPERATION2_GPIO_Port, OPERATION2_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(OPERATION3_GPIO_Port, OPERATION3_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(FAN_CONTROL_GPIO_Port, FAN_CONTROL_Pin, GPIO_PIN_SET);
-   
-    //printf("set\r\n");
-    HAL_Delay(1000);
     */
+
+  
     HAL_Delay(20); /* prevent 100% cpu usage */
 
     /* USER CODE END WHILE */
