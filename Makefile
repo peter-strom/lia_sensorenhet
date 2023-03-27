@@ -93,7 +93,8 @@ Src/winc_callbacks.c \
 Src/winc.c \
 Src/power.c \
 Src/syscalls.c\
-Src/eeprom.c
+Src/eeprom.c \
+Src/sht40.c
 # ASM sources
 ASM_SOURCES =  \
 startup_stm32l433xx.s

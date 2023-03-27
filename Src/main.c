@@ -33,6 +33,7 @@
 #include "winc.h"
 #include "power.h"
 #include "eeprom.h"
+#include "sht40.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -122,7 +123,10 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  i2c_test();
+  SHT40 temp_humidity_dev = new_SHT40();
+  SHT40_read_high_precision(&temp_humidity_dev);
+  SHT40_print(&temp_humidity_dev);
+  
   while (1)
   {
      /* Handle the app state machine plus the WINC event handler */
