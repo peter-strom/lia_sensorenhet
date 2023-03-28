@@ -126,6 +126,8 @@ int main(void)
   SHT40 temp_humidity_dev = new_SHT40();
   SHT40_read_high_precision(&temp_humidity_dev);
   SHT40_print(&temp_humidity_dev);
+
+  i2c_test();
   
   while (1)
   {

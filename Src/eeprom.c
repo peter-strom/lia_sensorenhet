@@ -1,47 +1,46 @@
 #include "eeprom.h"
 #define DEV_ADDR_GYRO (0x18 << 1) 
-#define DEV_ADDR_USBC (0x25 << 1) //ok
 
-#define DEV_ADDR_EEPROM (0x50 << 1) //ok
-#define DEV_ADDR_PRESSURE (0x5C << 1) //ok
 
-/**
- * SHT40 temp and humidity sensor
-*/
-#define SHT40_DEV_ADDR (0x44 << 1) //ok
-#define SHT40_HIGH_PRECISION 0xFD //6 bytes 
-#define SHT40_SERIAL_NUMBER 0xFD //6 bytes 
-/**
- * 2 * 8 bit registers example VL53L0X
- * tried one 16bit register. Did not work!
- *
- * 
- */
+#define EEPROM_DEV_ADDR (0x50 << 1) //ok
+#define EEPROM_SERVER_ADDR_REG 0x0060 //ok
+
 void i2c_test(void)
 {
-  uint8_t I2C_dev_address = SHT40_DEV_ADDR;
-  uint16_t I2C_dev_reg = SHT40_SERIAL_NUMBER; // 0x108c  0x1070=0x51??
   uint8_t buff[6];
-  if (HAL_I2C_IsDeviceReady(&hi2c1, I2C_dev_address, 1, 100) != HAL_OK)
+  if (HAL_I2C_IsDeviceReady(&hi2c1, EEPROM_DEV_ADDR, 1, 100) != HAL_OK)
   {
-    printf("error connecting to device address: %#04x\n\r", I2C_dev_address >> 1);
+    printf("error connecting to device address: %#04x\n\r", EEPROM_DEV_ADDR >> 1);
   }
   else
   {
-    printf("connecting to device address: %#04x\n\r", I2C_dev_address >> 1);
-    uint8_t testbuff[1] = {SHT40_HIGH_PRECISION};
-    HAL_I2C_Master_Transmit(&hi2c1,SHT40_DEV_ADDR,testbuff,1,100);
-    HAL_Delay(10);
-    HAL_I2C_Master_Receive(&hi2c1, SHT40_DEV_ADDR,buff,6,100);
+    printf("connecting to device address: %#04x\n\r", EEPROM_DEV_ADDR >> 1);
+    char server[] = "kungariket.se";
+    //printf("size of kungariket.se : %d \n\r", sizeof(server));
+    uint8_t tx_buff[8]= {0x00,0x60,0x05,0x07,0x09,0x0B,0x0D,0x0F};
     
-    uint16_t temp = (buff[0] << 8 | buff[1]);
-    uint8_t t_degC = 175 * temp / 65535 -45; 
-    temp = (buff[3] << 8 | buff[4]);
-    uint8_t rh_pRH = 125 * temp / 65535 -6; 
-    //HAL_I2C_Mem_Read(&hi2c1, I2C_dev_address, I2C_dev_reg, I2C_MEMADD_SIZE_8BIT, buff, 6, 100);
-    printf("register: %#04x temp_data0: %#06x temp_data1: %#06x temp_checksum: %#06x rh_data0: %#06x rh_data1: %#06x rh_checksum: %#06x\n\r", I2C_dev_reg, buff[0], buff[1], buff[2], buff[3], buff[4], buff[5]);
-    printf("temp: %d degrees C \n\r", t_degC);
-    printf("humidity: %d RH \n\r", rh_pRH);
+    //HAL_I2C_Mem_Write(&hi2c1, EEPROM_DEV_ADDR, EEPROM_SERVER_ADDR_REG, I2C_MEMADD_SIZE_16BIT, server, sizeof(server), 100);
+    
+    //HAL_I2C_Master_Transmit(&hi2c1,EEPROM_DEV_ADDR,tx_buff,sizeof(tx_buff),100);
+    
+    HAL_Delay(140);
+    uint8_t rx_buff[40] = {0};
+    //memset(&rx_buff,1,40);
+    HAL_I2C_Mem_Read(&hi2c1, EEPROM_DEV_ADDR, EEPROM_SERVER_ADDR_REG, I2C_MEMADD_SIZE_16BIT, rx_buff, 40, 100);
+    
+    for (uint8_t i=0 ; i < sizeof(rx_buff); i++)
+    {
+        printf("reg %d : %#04x \t",i , rx_buff[i]);
+        if (i%4==0)
+        {
+            printf("\r\n");
+        }
+    }
+    printf("\r\n");
+    printf("string %s \r\n",rx_buff);
+    //printf("register: %#04x temp_data0: %#06x temp_data1: %#06x temp_checksum: %#06x rh_data0: %#06x rh_data1: %#06x rh_checksum: %#06x\n\r", I2C_dev_reg, buff[0], buff[1], buff[2], buff[3], buff[4], buff[5]);
+    //printf("temp: %d degrees C \n\r", t_degC);
+    //printf("humidity: %d RH \n\r", rh_pRH);
  
     
   }

@@ -4,12 +4,14 @@
 #include "main.h"
 #include "i2c.h"
 
-void i2c_test(void);
-/*
-typedef enum
+typedef struct EEPROM
 {
-  SENSOR_RESET,
-  UPDATE_SETTINGS
-} ButtonMode;
-*/
+    int8_t utcH;
+    uint8_t SHT40_settings;
+    uint16_t m_intervalS;
+    uint16_t m_interval_battS
+} EEPROM;
+
+void i2c_test(void);
+
 #endif /*__EEPROM_H__ */
