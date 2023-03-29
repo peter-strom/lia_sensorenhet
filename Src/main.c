@@ -127,7 +127,9 @@ int main(void)
   SHT40_read_high_precision(&temp_humidity_dev);
   SHT40_print(&temp_humidity_dev);
 
-  i2c_test();
+  EEPROM eeprom = new_EEPROM();
+  EEPROM_load(&eeprom);
+  //i2c_test();
   
   while (1)
   {
