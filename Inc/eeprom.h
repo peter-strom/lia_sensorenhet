@@ -3,59 +3,34 @@
 
 #include "main.h"
 #include "i2c.h"
-typedef struct sServerSettings
+#include <stdbool.h>
+
+typedef struct sEEPROM
 {
-  uint16_t serverPort; //LSB
-  char serverUrl[30];
-} sServerSettings;
+  int8_t UtcH;
+  uint8_t SHT40_tempEnabled : 1; //LSB
+  uint8_t SHT40_humidityEnabled : 1;
+  uint8_t SHT40_heaterMode : 2;
+  uint8_t SHT40_doNotUse : 4;
+  uint16_t Interval_measurementS; //LSB
+  uint16_t Interval_measurementBatS;
+  uint16_t Interval_sendS;
+  uint16_t Interval_sendBatS;
+  char wlan_SSID[32];
+  char wlan_password[32];
+  uint16_t server_port; //LSB
+  char server_url[30];
+} sEEPROM;
 
-typedef union uServerSettings
+typedef union uEEPROM
 {
-  uint8_t raw[sizeof(sServerSettings)];
-  sServerSettings divided;
-} uServerSettings;
+  uint8_t raw[sizeof(sEEPROM)];
+  sEEPROM divided;
+} uEEPROM;
 
-typedef struct sSTH40Settings
-{
-  uint8_t tempEnabled : 1; //LSB
-  uint8_t humidityEnabled : 1;
-  uint8_t heaterMode : 2;
-  uint8_t doNotUse : 4;
-} sSTH40Settings;
+uEEPROM new_EEPROM(void);
+bool EEPROM_load(uEEPROM *self);
+bool EEPROM_save(uEEPROM *self);
 
-typedef union uSTH40Settings
-{
-  uint8_t raw[sizeof(sSTH40Settings)];
-  sSTH40Settings divided;
-} uSTH40Settings;
-
-typedef struct sIntervalSettings
-{
-  uint16_t measurementS; //LSB
-  uint16_t measurementBatS;
-  uint16_t sendS;
-  uint16_t sendBatS;
-} sIntervalSettings;
-
-typedef union uIntervalSettings
-{
-  uint8_t raw[sizeof(sIntervalSettings)];
-  sIntervalSettings divided;
-} uIntervalSettings;
-
-typedef struct EEPROM
-{
-  int8_t utcH;
-  uSTH40Settings SHT40Settings;
-  uIntervalSettings intervalSettings;
-  char wlanSSID[32];
-  char wlanPassword[32];
-  uServerSettings serverSettings;  
-
-} EEPROM;
-
-EEPROM new_EEPROM(void);
-void EEPROM_load(EEPROM *self);
-void i2c_test(void);
 
 #endif /*__EEPROM_H__ */

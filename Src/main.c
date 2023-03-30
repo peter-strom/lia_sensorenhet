@@ -127,12 +127,15 @@ int main(void)
   SHT40_read_high_precision(&temp_humidity_dev);
   SHT40_print(&temp_humidity_dev);
 
-  EEPROM eeprom = new_EEPROM();
+  uEEPROM eeprom = new_EEPROM();
   EEPROM_load(&eeprom);
+  strncpy(eeprom.divided.server_url, "www.kungariket.se\0",sizeof(eeprom.divided.server_url));
+  EEPROM_save(&eeprom);
   //i2c_test();
   
   while (1)
   {
+
      /* Handle the app state machine plus the WINC event handler */
     /*
     while (m2m_wifi_handle_events(NULL) != M2M_SUCCESS)
