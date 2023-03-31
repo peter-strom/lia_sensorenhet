@@ -1,48 +1,113 @@
-#include "eeprom.h"
-#define DEV_ADDR_GYRO (0x18 << 1) 
-#define DEV_ADDR_USBC (0x25 << 1) //ok
-
-#define DEV_ADDR_EEPROM (0x50 << 1) //ok
-#define DEV_ADDR_PRESSURE (0x5C << 1) //ok
-
 /**
- * SHT40 temp and humidity sensor
-*/
-#define SHT40_DEV_ADDR (0x44 << 1) //ok
-#define SHT40_HIGH_PRECISION 0xFD //6 bytes 
-#define SHT40_SERIAL_NUMBER 0xFD //6 bytes 
-/**
- * 2 * 8 bit registers example VL53L0X
- * tried one 16bit register. Did not work!
- *
- * 
+ * https://fscdn.rohm.com/en/products/databook/datasheet/ic/memory/eeprom/br24h64xxx-5ac-e.pdf
  */
-void i2c_test(void)
+#include "eeprom.h"
+#define DEV_ADDR_GYRO (0x18 << 1)
+#define EEPROM_DEV_ADDR (0x50 << 1)
+#define EEPROM_START_REG_ADDR 0x0000
+#define EEPROM_CHUNK_SIZE 4 // number of bytes that are written as a group
+
+bool EEPROM_i2c_read_wrapper(uint8_t devAddr, uint16_t regAddr, uint8_t *dataBuff, uint8_t size);
+bool EEPROM_i2c_write_wrapper(uint8_t devAddr, uint16_t regAddr, uint8_t *dataBuff, uint8_t size);
+void print_hex(uint8_t *data_buff, uint8_t size);
+
+bool EEPROM_load(uEEPROM *self)
 {
-  uint8_t I2C_dev_address = SHT40_DEV_ADDR;
-  uint16_t I2C_dev_reg = SHT40_SERIAL_NUMBER; // 0x108c  0x1070=0x51??
-  uint8_t buff[6];
-  if (HAL_I2C_IsDeviceReady(&hi2c1, I2C_dev_address, 1, 100) != HAL_OK)
+  bool statusOk = true;
+  printf("size: %d \r\n", sizeof(sEEPROM));
+  statusOk &= EEPROM_i2c_read_wrapper(EEPROM_DEV_ADDR, EEPROM_START_REG_ADDR,
+                                      self->raw, sizeof(self->raw));
+  return statusOk;
+}
+
+bool EEPROM_save(uEEPROM *self)
+{
+  bool statusOk = true;
+  uEEPROM old;
+  EEPROM_load(&old);
+  uint16_t regSize = sizeof(self->raw);
+  for (uint16_t addr = 0; addr < regSize; addr += EEPROM_CHUNK_SIZE)
   {
-    printf("error connecting to device address: %#04x\n\r", I2C_dev_address >> 1);
+    uint8_t writeSize = EEPROM_CHUNK_SIZE;
+    if (addr + EEPROM_CHUNK_SIZE > regSize)
+    {
+      writeSize = regSize % addr;
+    }
+#ifdef DEBUG_MODE
+    printf("addr: %d writesize: %d \r\n", addr, writeSize);
+#endif
+    for (uint8_t i = 0; i < writeSize; i++)
+    {
+      if (self->raw[addr + i] != old.raw[addr + i])
+      {
+#ifdef DEBUG_MODE
+        printf("old: %d - new: %d\r\n", old.raw[addr + i], self->raw[addr + i]);
+        if (statusOk)
+        {
+          printf("writing OK\r\n");
+        }
+        else
+        {
+          printf("writing not OK\r\n");
+        }
+#endif
+        statusOk &= EEPROM_i2c_write_wrapper(EEPROM_DEV_ADDR, addr,
+                                             &self->raw[addr], writeSize);
+        break;
+      }
+    }
   }
-  else
+
+  return statusOk;
+}
+
+void EEPROM_print(uEEPROM *self)
+{
+  printf("------------------eeprom-----------------------\r\n");
+  printf("Time zone: %d \r\n", self->divided.utcH);
+  printf("STH40 Heater mode: %d \r\n", self->divided.SHT40_heaterMode);
+  printf("STH40 Humidity enabled: %d \r\n", self->divided.SHT40_humidityEnabled);
+  printf("STH40 Temp enabled: %d \r\n", self->divided.SHT40_tempEnabled);
+  printf("Interval measurements in seconds: %d \r\n", self->divided.interval_measurementS);
+  printf("Interval measurements (batery mode) in seconds: %d \r\n", self->divided.interval_measurementBatS);
+  printf("Interval send in seconds: %d \r\n", self->divided.interval_sendS);
+  printf("Interval send (batery mode) in seconds: %d \r\n", self->divided.interval_sendBatS);
+  printf("WLAN SSID: %s \r\n", self->divided.wlan_SSID);
+  printf("WLAN password: %s \r\n", self->divided.wlan_password);
+  printf("server url: %s \r\n", self->divided.server_url);
+  printf("server port: %d \r\n", self->divided.server_port);
+  printf("-----------------------------------------------\r\n");
+}
+
+void print_hex(uint8_t *dataBuff, uint8_t size)
+{
+  for (uint8_t i = 0; i < size; i++)
   {
-    printf("connecting to device address: %#04x\n\r", I2C_dev_address >> 1);
-    uint8_t testbuff[1] = {SHT40_HIGH_PRECISION};
-    HAL_I2C_Master_Transmit(&hi2c1,SHT40_DEV_ADDR,testbuff,1,100);
-    HAL_Delay(10);
-    HAL_I2C_Master_Receive(&hi2c1, SHT40_DEV_ADDR,buff,6,100);
-    
-    uint16_t temp = (buff[0] << 8 | buff[1]);
-    uint8_t t_degC = 175 * temp / 65535 -45; 
-    temp = (buff[3] << 8 | buff[4]);
-    uint8_t rh_pRH = 125 * temp / 65535 -6; 
-    //HAL_I2C_Mem_Read(&hi2c1, I2C_dev_address, I2C_dev_reg, I2C_MEMADD_SIZE_8BIT, buff, 6, 100);
-    printf("register: %#04x temp_data0: %#06x temp_data1: %#06x temp_checksum: %#06x rh_data0: %#06x rh_data1: %#06x rh_checksum: %#06x\n\r", I2C_dev_reg, buff[0], buff[1], buff[2], buff[3], buff[4], buff[5]);
-    printf("temp: %d degrees C \n\r", t_degC);
-    printf("humidity: %d RH \n\r", rh_pRH);
- 
-    
+    printf("reg %d : %#04x \t", i, dataBuff[i]);
+    if (i % 4 == 0)
+    {
+      printf("\r\n");
+    }
   }
+  printf("\r\n");
+}
+
+bool EEPROM_i2c_read_wrapper(uint8_t devAddr, uint16_t regAddr, uint8_t *dataBuff, uint8_t size)
+{
+  bool statusOk = false;
+  if (HAL_I2C_Mem_Read(&hi2c1, devAddr, regAddr, I2C_MEMADD_SIZE_16BIT, dataBuff, size, 100) == HAL_OK)
+  {
+    statusOk = true;
+  }
+  return statusOk;
+}
+
+bool EEPROM_i2c_write_wrapper(uint8_t devAddr, uint16_t regAddr, uint8_t *dataBuff, uint8_t size)
+{
+  bool statusOk = false;
+  if (HAL_I2C_Mem_Write(&hi2c1, devAddr, regAddr, I2C_MEMADD_SIZE_16BIT, dataBuff, size, 100) == HAL_OK)
+  {
+    statusOk = true;
+  }
+  return statusOk;
 }
