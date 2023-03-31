@@ -11,31 +11,72 @@ bool EEPROM_i2c_read_wrapper(uint8_t devAddr, uint16_t regAddr, uint8_t *dataBuf
 bool EEPROM_i2c_write_wrapper(uint8_t devAddr, uint16_t regAddr, uint8_t *dataBuff, uint8_t size);
 void print_hex(uint8_t *data_buff, uint8_t size);
 
-uEEPROM new_EEPROM(void)
-{
-  uEEPROM self;
-  return self;
-}
-
 bool EEPROM_load(uEEPROM *self)
 {
   bool statusOk = true;
   printf("size: %d \r\n", sizeof(sEEPROM));
   statusOk &= EEPROM_i2c_read_wrapper(EEPROM_DEV_ADDR, EEPROM_START_REG_ADDR,
                                       self->raw, sizeof(self->raw));
-  
-  print_hex(&self->divided.server_url, sizeof(self->divided.server_url));
+  return statusOk;
+}
+
+bool EEPROM_save(uEEPROM *self)
+{
+  bool statusOk = true;
+  uEEPROM old;
+  EEPROM_load(&old);
+  uint16_t regSize = sizeof(self->raw);
+  for (uint16_t addr = 0; addr < regSize; addr += EEPROM_CHUNK_SIZE)
+  {
+    uint8_t writeSize = EEPROM_CHUNK_SIZE;
+    if (addr + EEPROM_CHUNK_SIZE > regSize)
+    {
+      writeSize = regSize % addr;
+    }
+#ifdef DEBUG_MODE
+    printf("addr: %d writesize: %d \r\n", addr, writeSize);
+#endif
+    for (uint8_t i = 0; i < writeSize; i++)
+    {
+      if (self->raw[addr + i] != old.raw[addr + i])
+      {
+#ifdef DEBUG_MODE
+        printf("old: %d - new: %d\r\n", old.raw[addr + i], self->raw[addr + i]);
+        if (statusOk)
+        {
+          printf("writing OK\r\n");
+        }
+        else
+        {
+          printf("writing not OK\r\n");
+        }
+#endif
+        statusOk &= EEPROM_i2c_write_wrapper(EEPROM_DEV_ADDR, addr,
+                                             &self->raw[addr], writeSize);
+        break;
+      }
+    }
+  }
 
   return statusOk;
 }
 
 void EEPROM_print(uEEPROM *self)
 {
-  /*
-  printf("LSB : %d \r\n", self->SHT40Settings.divided.tempEnabled);
-  printf("3 : %d \r\n", self->SHT40Settings.divided.heaterMode);
-  printf("size of : %d \r\n", sizeof(self->SHT40Settings));
-  */
+  printf("------------------eeprom-----------------------\r\n");
+  printf("Time zone: %d \r\n", self->divided.utcH);
+  printf("STH40 Heater mode: %d \r\n", self->divided.SHT40_heaterMode);
+  printf("STH40 Humidity enabled: %d \r\n", self->divided.SHT40_humidityEnabled);
+  printf("STH40 Temp enabled: %d \r\n", self->divided.SHT40_tempEnabled);
+  printf("Interval measurements in seconds: %d \r\n", self->divided.interval_measurementS);
+  printf("Interval measurements (batery mode) in seconds: %d \r\n", self->divided.interval_measurementBatS);
+  printf("Interval send in seconds: %d \r\n", self->divided.interval_sendS);
+  printf("Interval send (batery mode) in seconds: %d \r\n", self->divided.interval_sendBatS);
+  printf("WLAN SSID: %s \r\n", self->divided.wlan_SSID);
+  printf("WLAN password: %s \r\n", self->divided.wlan_password);
+  printf("server url: %s \r\n", self->divided.server_url);
+  printf("server port: %d \r\n", self->divided.server_port);
+  printf("-----------------------------------------------\r\n");
 }
 
 void print_hex(uint8_t *dataBuff, uint8_t size)
@@ -49,36 +90,6 @@ void print_hex(uint8_t *dataBuff, uint8_t size)
     }
   }
   printf("\r\n");
-  printf("string %s \r\n", dataBuff);
-}
-
-bool EEPROM_save(uEEPROM *self)
-{
-  bool statusOk = true;
-  uEEPROM old = new_EEPROM();
-  EEPROM_load(&old);
-  uint16_t regSize = sizeof(self->raw);
-  for (uint16_t addr = 0; addr < regSize; addr += EEPROM_CHUNK_SIZE)
-  {
-    uint8_t writeSize = EEPROM_CHUNK_SIZE;
-    if (addr + EEPROM_CHUNK_SIZE > regSize)
-    {
-      writeSize = EEPROM_CHUNK_SIZE % addr;
-    }
-
-    for (uint8_t i = 0; i < writeSize; i++)
-    {
-      if (self->raw[addr + i] != old.raw[addr + i])
-      {
-        statusOk &= EEPROM_i2c_write_wrapper(EEPROM_DEV_ADDR, addr,
-                                             self->raw[addr], writeSize);
-                                             
-        break;
-      }
-    }
-  }
-
-  return statusOk;
 }
 
 bool EEPROM_i2c_read_wrapper(uint8_t devAddr, uint16_t regAddr, uint8_t *dataBuff, uint8_t size)
@@ -93,7 +104,6 @@ bool EEPROM_i2c_read_wrapper(uint8_t devAddr, uint16_t regAddr, uint8_t *dataBuf
 
 bool EEPROM_i2c_write_wrapper(uint8_t devAddr, uint16_t regAddr, uint8_t *dataBuff, uint8_t size)
 {
-  printf("writing: %d\r\n",regAddr);
   bool statusOk = false;
   if (HAL_I2C_Mem_Write(&hi2c1, devAddr, regAddr, I2C_MEMADD_SIZE_16BIT, dataBuff, size, 100) == HAL_OK)
   {
@@ -101,4 +111,3 @@ bool EEPROM_i2c_write_wrapper(uint8_t devAddr, uint16_t regAddr, uint8_t *dataBu
   }
   return statusOk;
 }
-
