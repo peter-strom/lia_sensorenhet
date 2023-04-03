@@ -125,9 +125,9 @@ int main(void)
   uEEPROM eeprom;
   // eeprom = new_EEPROM();
   EEPROM_load(&eeprom);
-
+ 
   SHT40 temp_humidity_dev = new_SHT40();
-  SHT40_read_high_precision(&temp_humidity_dev);
+  SHT40_read_high_precision(&temp_humidity_dev,eeprom.divided.SHT40_heaterMode);
   SHT40_print(&temp_humidity_dev);
 
   strncpy(eeprom.divided.wlan_SSID, MAIN_WLAN_SSID, sizeof(eeprom.divided.wlan_SSID));

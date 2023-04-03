@@ -34,6 +34,7 @@ extern "C" {
 #include "../config.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 /* USER CODE END Includes */
 
