@@ -1,16 +1,15 @@
-/**
- * https://fscdn.rohm.com/en/products/databook/datasheet/ic/memory/eeprom/br24h64xxx-5ac-e.pdf
- */
 #include "eeprom.h"
-#define DEV_ADDR_GYRO (0x18 << 1)
-#define EEPROM_DEV_ADDR (0x50 << 1)
-#define EEPROM_START_REG_ADDR 0x0000
-#define EEPROM_CHUNK_SIZE 4 // number of bytes that are written as a group
 
 bool EEPROM_i2c_read_wrapper(uint8_t devAddr, uint16_t regAddr, uint8_t *dataBuff, uint8_t size);
 bool EEPROM_i2c_write_wrapper(uint8_t devAddr, uint16_t regAddr, uint8_t *dataBuff, uint8_t size);
 void print_hex(uint8_t *data_buff, uint8_t size);
 
+/**
+ * @brief Loads data from eeprom to a struct.
+ *
+ * @param[out] self destination struct
+ * @return true if successfull
+ */
 bool EEPROM_load(uEEPROM *self)
 {
   bool statusOk = true;
@@ -20,6 +19,14 @@ bool EEPROM_load(uEEPROM *self)
   return statusOk;
 }
 
+/**
+ * @brief Saves data from struct to eeprom.
+ * @details First checks for changes to save write cycles
+ *          and writes the whole chunk (hopefully as a group)
+ * 
+ * @param[in] self source struct
+ * @return true if successfull
+ */
 bool EEPROM_save(uEEPROM *self)
 {
   bool statusOk = true;
@@ -61,6 +68,11 @@ bool EEPROM_save(uEEPROM *self)
   return statusOk;
 }
 
+/**
+ * @brief Prints all the settings from a struct.
+ *
+ * @param[in] self source struct to print
+ */
 void EEPROM_print(uEEPROM *self)
 {
   printf("------------------eeprom-----------------------\r\n");
@@ -79,19 +91,15 @@ void EEPROM_print(uEEPROM *self)
   printf("-----------------------------------------------\r\n");
 }
 
-void print_hex(uint8_t *dataBuff, uint8_t size)
-{
-  for (uint8_t i = 0; i < size; i++)
-  {
-    printf("reg %d : %#04x \t", i, dataBuff[i]);
-    if (i % 4 == 0)
-    {
-      printf("\r\n");
-    }
-  }
-  printf("\r\n");
-}
-
+/**
+ * @brief i2c wrapper function to read data from eeprom.
+ *
+ * @param[in] devAddr device i2c address
+ * @param[in] regAddr registeradress to start read from
+ * @param[out] dataBuff databuffert to store the data in
+ * @param[in] size how many bytes of data to read.
+ * @return true if successfull
+ */
 bool EEPROM_i2c_read_wrapper(uint8_t devAddr, uint16_t regAddr, uint8_t *dataBuff, uint8_t size)
 {
   bool statusOk = false;
@@ -102,6 +110,15 @@ bool EEPROM_i2c_read_wrapper(uint8_t devAddr, uint16_t regAddr, uint8_t *dataBuf
   return statusOk;
 }
 
+/**
+ * @brief i2c wrapper function to write data to eeprom.
+ *
+ * @param[in] devAddr device i2c address
+ * @param[in] regAddr registeradress to start read from
+ * @param[out] dataBuff databuffert to store the data in
+ * @param[in] size how many bytes of data to read.
+ * @return true if successfull
+ */
 bool EEPROM_i2c_write_wrapper(uint8_t devAddr, uint16_t regAddr, uint8_t *dataBuff, uint8_t size)
 {
   bool statusOk = false;
