@@ -151,20 +151,20 @@ int main(void)
   {
 
     /* Handle the app state machine plus the WINC event handler */
-    /*
+    
     while (m2m_wifi_handle_events(NULL) != M2M_SUCCESS)
     {
     }
 
     if (gconnected == CONNECTED)
     {
-      connect_to_server(&addr);
+      //connect_to_server(&addr);
     }
     else if (gconnected == NOT_CONNECTED)
     {
       connect_to_ap();
     }
-    */
+    
 
     HAL_Delay(20); /* prevent 100% cpu usage */
 
