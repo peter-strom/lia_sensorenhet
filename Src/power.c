@@ -1,4 +1,5 @@
 #include "power.h"
+#include "eeprom.h"
 static void psu_load_settings(PSUmode psuMode);
 static void psu_update_mode(void);
 static uint16_t measure_active_time(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin);
@@ -40,7 +41,7 @@ void psu_update_mode(void)
 }
 
 /**
- * @todo: read settings from eeprom, do not init timer if not enabled in settings.
+ * @todo: try to fix so the counter value gets reused
  * @brief load power supply mode settings
  *
  * @param psu_mode OUTLET/BATTERY
@@ -51,20 +52,20 @@ static void psu_load_settings(PSUmode psuMode)
   HAL_TIM_Base_DeInit(&htim2);
   if (psuMode == OUTLET)
   {
-    htim2.Init.Period = 6000;
+    htim2.Init.Period = eeprom.divided.interval_measurementS * 1000;
 #ifdef DEBUG_MODE
     printf("PSU: outlet mode\r\n");
 #endif
   }
   else
   {
-    htim2.Init.Period = 12000;
+    htim2.Init.Period = eeprom.divided.interval_measurementBatS * 1000;
 #ifdef DEBUG_MODE
     printf("PSU: battery mode\r\n");
 #endif
   }
-  // HAL_TIM_Base_Init(&htim2);
-  // HAL_TIM_Base_Start_IT(&htim2);
+  HAL_TIM_Base_Init(&htim2);
+  HAL_TIM_Base_Start_IT(&htim2);
 }
 
 /**
@@ -113,7 +114,7 @@ static uint16_t measure_active_time(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 /**
  * @brief proper power off function from Piranha (ST forum)
  * @details https://community.st.com/s/question/0D53W00001bnh8dSAA/how-to-enter-standby-or-shutdown-mode-on-stm32
- * 
+ *
  */
 static void power_off(void)
 {

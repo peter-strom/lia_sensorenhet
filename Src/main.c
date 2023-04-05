@@ -53,7 +53,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uEEPROM eeprom;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -103,7 +103,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_GPIO_WritePin(LED_ON_GPIO_Port, LED_ON_Pin, GPIO_PIN_SET);
   printf("----->test\r\n");
-  psu_init();
+  
 
   HAL_RTC_DeactivateAlarm(&hrtc, RTC_ALARM_A);
   /* WIFI */
@@ -122,10 +122,10 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  uEEPROM eeprom;
+  
   // eeprom = new_EEPROM();
   EEPROM_load(&eeprom);
- 
+ psu_init();
   SHT40 temp_humidity_dev = new_SHT40();
   SHT40_read_high_precision(&temp_humidity_dev,eeprom.divided.SHT40_heaterMode);
   SHT40_print(&temp_humidity_dev);
