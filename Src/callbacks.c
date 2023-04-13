@@ -77,7 +77,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     RTC_DateTypeDef date;
     HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);
     HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);
-    printf("htim2: time: %02d:%02d:%02d ---timer\r\n", time.Hours, time.Minutes, time.Seconds);
+    printf("htim2: date: %02d-%02d-%02d time: %02d:%02d:%02d weekday: %d -timer interval\r\n", date.Year, date.Month, date.Date, time.Hours, time.Minutes, time.Seconds, date.WeekDay);
 #endif
   }
 }
@@ -91,7 +91,8 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc)
   RTC_DateTypeDef date;
   HAL_RTC_GetTime(hrtc, &time, RTC_FORMAT_BIN);
   HAL_RTC_GetDate(hrtc, &date, RTC_FORMAT_BIN);
-  printf("hrtc: date: %02d-%02d-%02d time: %02d:%02d:%02d -alarm\r\n", date.Year, date.Month, date.Date, time.Hours, time.Minutes, time.Seconds);
+   
+  printf("hrtc: date: %02d-%02d-%02d time: %02d:%02d:%02d weekday: %d -alarm\r\n", date.Year, date.Month, date.Date, time.Hours, time.Minutes, time.Seconds, date.WeekDay);
 #endif
 }
 
