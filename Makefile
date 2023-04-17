@@ -94,7 +94,8 @@ Src/winc.c \
 Src/power.c \
 Src/syscalls.c \
 Src/eeprom.c \
-Src/sht40.c
+Src/sht40.c \
+Src/rtc_functions.c
 
 # ASM sources
 ASM_SOURCES =  \

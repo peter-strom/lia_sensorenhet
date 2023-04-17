@@ -4,6 +4,7 @@
 #include "usart.h"
 #include "driver/include/m2m_wifi.h"
 #include "power.h"
+#include "rtc_functions.h"
 
 extern tpfNmBspIsr gpfIsr; // pointer to WINC HIF isr function
 static ButtonMode resetUpdateButton = UPDATE_SETTINGS;
@@ -73,11 +74,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   if (htim->Instance == htim2.Instance)
   {
 #ifdef DEBUG_MODE
-    RTC_TimeTypeDef time;
-    RTC_DateTypeDef date;
-    HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);
-    HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);
-    printf("htim2: date: %02d-%02d-%02d time: %02d:%02d:%02d weekday: %d -timer interval\r\n", date.Year, date.Month, date.Date, time.Hours, time.Minutes, time.Seconds, date.WeekDay);
+    printf("htim2:(timer interval) --- ");
+    print_time(&hrtc);
 #endif
   }
 }
@@ -87,12 +85,8 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc)
 // EXTI_IMR1_IM18_Msk;
 // if(RTC_EXTI_LINE_ALARM_EVENT==1)
 #ifdef DEBUG_MODE
-  RTC_TimeTypeDef time;
-  RTC_DateTypeDef date;
-  HAL_RTC_GetTime(hrtc, &time, RTC_FORMAT_BIN);
-  HAL_RTC_GetDate(hrtc, &date, RTC_FORMAT_BIN);
-   
-  printf("hrtc: date: %02d-%02d-%02d time: %02d:%02d:%02d weekday: %d -alarm\r\n", date.Year, date.Month, date.Date, time.Hours, time.Minutes, time.Seconds, date.WeekDay);
+  printf("rtc:(alarm) --- ");
+  print_time(&hrtc);
 #endif
 }
 
@@ -101,7 +95,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
   HAL_UART_Receive_IT(&huart2, rxBuff, 1);
 #ifdef DEBUG_MODE
-  //printf("recieved by uart: %d \r\n", rxBuff[0]);
+  // printf("recieved by uart: %d \r\n", rxBuff[0]);
 #endif
   if (rxBuff[0] == 49) // test on
   {
@@ -129,13 +123,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   }
   else if (rxBuff[0] == 51) // irq-sensor set, shuld be trigged by gpio-interrupt EXTI9_5
   {
-    #ifdef DEBUG_MODE
-      printf("sensor_alarm!\r\n");
-    #endif
+#ifdef DEBUG_MODE
+    printf("sensor_alarm!\r\n");
+#endif
     if (resetUpdateButton == UPDATE_SETTINGS)
     {
       resetUpdateButton = SENSOR_RESET;
-
     }
   }
 }

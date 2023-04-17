@@ -16,6 +16,11 @@ typedef enum
     CONNECTED
 } tenuConState;
 
+typedef struct
+{
+  uint8_t name[9];
+} t_msg_wifi_product;
+
 extern tenuConState gconnected;
 extern uint8_t gscancomplete;
 extern SOCKET tcp_client_socket;
