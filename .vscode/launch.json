@@ -8,6 +8,8 @@
             "executable": "./build/afry_lia.elf",
             "servertype": "openocd",
             "device": "STM32L433RC",
+            "gdbPath": "gdb-multiarch",
+          
             "configFiles": [
                 "interface/stlink.cfg",
                 "target/stm32l4x.cfg"
