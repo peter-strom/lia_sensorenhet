@@ -140,11 +140,21 @@ void socket_cb(SOCKET sock, uint8_t u8Msg, void *pvMsg)
     {
 #ifdef DEBUG_MODE
       printf("socket_cb: recv success!\r\n");
-      printf(" %c \r\n", pstrRecv->pu8Buffer[0]);
+      printf("recieved: %s \r\n", pstrRecv->pu8Buffer);
+
+      char compstr[] = {"hej"};
+      if (strcmp(pstrRecv->pu8Buffer, compstr) == 0)
+      {
+        printf("str compare ok\r\n");
+      }
+      else
+      {
+        printf("str compare failed\r\n");
+      }
 #endif
       char buff[] = "hej";
       send(tcp_client_socket, buff, 3, 5);
-      // printf("TCP Client Test Complete!\r\n");
+      memset(pstrRecv->pu8Buffer, 0, sizeof(pstrRecv->pu8Buffer));
     }
     else
     {

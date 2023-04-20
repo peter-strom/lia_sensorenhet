@@ -158,7 +158,7 @@ int main(void)
 
     if (gconnected == CONNECTED)
     {
-      //connect_to_server(&addr);
+      connect_to_server(&addr);
     }
     else if (gconnected == NOT_CONNECTED)
     {
