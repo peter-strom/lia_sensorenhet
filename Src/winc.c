@@ -82,3 +82,8 @@ void print_mac(void)
   get_mac(&mac, OPT_FALSE);
   print(&mac);
 }
+
+void send_socket_message(char *msg, uint16_t msgSize)
+{
+  send(tcp_client_socket, msg, msgSize, 0);
+}

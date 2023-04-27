@@ -18,6 +18,7 @@ void socket_init(struct sockaddr_in * pSockAddr);
 void connect_to_ap(void);
 void connect_to_server(struct sockaddr_in *pSockAddr);
 void print_mac(void);
+void send_socket_message(char *msg, uint16_t msgSize);
 
 
 #endif /*__WINC_H__ */

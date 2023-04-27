@@ -142,10 +142,11 @@ void socket_cb(SOCKET sock, uint8_t u8Msg, void *pvMsg)
       printf("socket_cb: recv success!\r\n");
       printf("recieved: %s \r\n", pstrRecv->pu8Buffer);
 
-      char compstr[] = {"hej"};
-      if (strcmp(pstrRecv->pu8Buffer, compstr) == 0)
+      //char compstr[] = {"hej"};
+      if (strcmp(pstrRecv->pu8Buffer, (char*)"password") == 0)
       {
         printf("str compare ok\r\n");
+        send(tcp_client_socket,(char*)"daniel",6,5);
       }
       else
       {
