@@ -45,7 +45,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     }
     else
     {
-      char msg[] = "hej daniel";
+      char msg[] = "settings_update_request";
       send_socket_message(&msg, sizeof(msg));
 #ifdef DEBUG_MODE
       printf("update_settings!\r\n");

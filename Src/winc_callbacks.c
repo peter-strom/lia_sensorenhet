@@ -145,8 +145,7 @@ void socket_cb(SOCKET sock, uint8_t u8Msg, void *pvMsg)
       //char compstr[] = {"hej"};
       if (strcmp(pstrRecv->pu8Buffer, (char*)"password") == 0)
       {
-        printf("str compare ok\r\n");
-        send(tcp_client_socket,(char*)"daniel",6,5);
+        send(tcp_client_socket,(char*)"secret handshake",17,5);
       }
       else
       {
