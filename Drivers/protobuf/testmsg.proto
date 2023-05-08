@@ -1,0 +1,12 @@
+
+
+  syntax = "proto3";
+
+  package testmsg;
+
+  message Testmsg
+  {
+    string timestamp=1;
+    sint32 temperature=2;
+    uint32 humidity=3;
+  }

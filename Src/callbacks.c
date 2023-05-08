@@ -7,6 +7,8 @@
 #include "rtc_functions.h"
 #include "winc.h"
 
+#include "../Drivers/protobuf/testmsg.pb-c.h"
+
 extern tpfNmBspIsr gpfIsr; // pointer to WINC HIF isr function
 static ButtonMode resetUpdateButton = UPDATE_SETTINGS;
 uint8_t rxBuff[12];
@@ -75,7 +77,18 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim->Instance == htim2.Instance)
-  {
+  { 
+    Testmsg__Testmsg testmsg;
+    testmsg__testmsg__init(&testmsg);
+    testmsg.humidity = 44;
+    testmsg.temperature = 13;
+    testmsg.timestamp = "2023-05-08 13:20:22";
+    size_t protoBuffSize = testmsg__testmsg__get_packed_size(&testmsg);
+    printf("size: %d bytes \r\n", protoBuffSize);
+    uint8_t protoBuff[protoBuffSize];
+    testmsg__testmsg__pack(&testmsg, &protoBuff);
+    send_socket_message(&protoBuff, protoBuffSize);
+
 #ifdef DEBUG_MODE
     printf("htim2:(timer interval) --- ");
     print_time(&hrtc);
