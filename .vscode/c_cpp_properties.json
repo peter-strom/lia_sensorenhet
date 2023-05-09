@@ -1,31 +1,29 @@
 {
-    "configurations": [
-        {
-            "name": "STM32 L4",
-            "includePath": [
-                "${workspaceFolder}/**",
-                "${workspaceFolder}/Inc",
-                "${workspaceFolder}"
-            ],
-            "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE",
-                "USE_HAL_DRIVER",
-                "STM32L433xx"
-            ],
-            "intelliSenseMode": "gcc-arm",
-            "compilerPath": "${env:ARMGCC_DIR}/arm-none-eabi-gcc",
-            "compilerArgs": [
-                "-mcpu=cortex-m4",
-                "-mfpu=fpv4-sp-d16",
-                "-mfloat-abi=hard",
-                "-mthumb"
-            ],
-            "cStandard": "c11",
-            "cppStandard": "c++17",
-            "configurationProvider": "ms-vscode.cpptools"
-        }
-    ],
-    "version": 4
+  "configurations": [
+    {
+      "name": "windows-gcc-x64",
+      "includePath": [
+        "${workspaceFolder}/**"
+      ],
+      "defines": [
+        "_DEBUG",
+        "UNICODE",
+        "_UNICODE",
+        "USE_HAL_DRIVER",
+        "STM32L433xx"
+      ],
+      "intelliSenseMode": "windows-gcc-x64",
+      "compilerPath": "gcc",
+      "compilerArgs": [
+        "-mcpu=cortex-m4",
+        "-mfpu=fpv4-sp-d16",
+        "-mfloat-abi=hard",
+        "-mthumb"
+      ],
+      "cStandard": "${default}",
+      "cppStandard": "${default}",
+      "configurationProvider": "ms-vscode.cpptools"
+    }
+  ],
+  "version": 4
 }

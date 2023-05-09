@@ -6,6 +6,7 @@
 #include "power.h"
 #include "rtc_functions.h"
 #include "winc.h"
+#include "sht40.h"
 
 #include "../Drivers/protobuf/testmsg.pb-c.h"
 
@@ -77,16 +78,33 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim->Instance == htim2.Instance)
-  { 
+  {
+    
+    if (gconnected == NOT_CONNECTED)
+    {
+      return;
+    }
+    
+    //SHT40 temp_humidity_ = new_SHT40();
+    //SHT40_read_high_precision(&temp_humidity_, 0);
+    
     Testmsg__Testmsg testmsg;
     testmsg__testmsg__init(&testmsg);
-    testmsg.humidity = 44;
-    testmsg.temperature = 13;
-    testmsg.timestamp = "2023-05-08 13:20:22";
+    char timestamp[18];
+    get_time(&hrtc, &timestamp);
+    //testmsg.humidity = temp_humidity_.humidityRH;
+    //testmsg.temperature = temp_humidity_.temperatureC;
+    testmsg.timestamp = timestamp;
     size_t protoBuffSize = testmsg__testmsg__get_packed_size(&testmsg);
     printf("size: %d bytes \r\n", protoBuffSize);
     uint8_t protoBuff[protoBuffSize];
     testmsg__testmsg__pack(&testmsg, &protoBuff);
+    for (uint8_t i = 0; i < protoBuffSize; i++)
+    {
+      printf("%2x ", protoBuff[i]);
+    }
+    printf("\r\nhumidity: %d \r\n", testmsg.humidity);
+
     send_socket_message(&protoBuff, protoBuffSize);
 
 #ifdef DEBUG_MODE

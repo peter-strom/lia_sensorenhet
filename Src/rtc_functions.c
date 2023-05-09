@@ -30,8 +30,6 @@ void set_rtc_time(RTC_HandleTypeDef *hrtc, tstrSystemTime *pstrSystemTime)
   }
 }
 
- 
-
 /**
  * @brief calculates the weekday from a date
  * @details using Michael Keith and Tom Craver's expression
@@ -48,8 +46,8 @@ uint8_t calc_weekday(uint16_t year, uint8_t month, uint8_t day)
 
 /**
  * @brief sets or unsets daylight saving time.
- * 
- * @param hrtc RTC handle 
+ *
+ * @param hrtc RTC handle
  */
 void set_DTS(RTC_HandleTypeDef *hrtc)
 {
@@ -193,8 +191,24 @@ bool adjus_time(tstrSystemTime *sysTime, int adjHours)
 }
 
 /**
+ * @brief writes timestamp to dataBuff
+ *
+ * @param[in] hrtc RTC handle
+ * @param[out] dataBuff
+ */
+void get_time(RTC_HandleTypeDef *hrtc, char *dataBuff)
+{
+  RTC_TimeTypeDef time;
+  RTC_DateTypeDef date;
+  HAL_RTC_GetTime(hrtc, &time, RTC_FORMAT_BIN);
+  HAL_RTC_GetDate(hrtc, &date, RTC_FORMAT_BIN);
+  sprintf(dataBuff, "%02d-%02d-%02d %02d:%02d:%02d\0",
+          date.Year, date.Month, date.Date, time.Hours, time.Minutes, time.Seconds, date.WeekDay);
+}
+
+/**
  * @brief prints date and time
- * 
+ *
  * @param hrtc RTC handle
  */
 void print_time(RTC_HandleTypeDef *hrtc)
