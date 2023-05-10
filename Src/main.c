@@ -34,6 +34,7 @@
 #include "power.h"
 #include "sht40.h"
 #include "eeprom.h"
+#include "measure.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,6 +55,7 @@
 
 /* USER CODE BEGIN PV */
 uEEPROM eeprom;
+uint8_t measureNow;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -99,6 +101,7 @@ int main(void)
   MX_SPI1_Init();
   MX_USART2_UART_Init();
   EEPROM_load(&eeprom);
+  eeprom.divided.interval_measurementS = 5; //temporary
   MX_RTC_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
@@ -126,9 +129,10 @@ int main(void)
   // eeprom = new_EEPROM();
 
   psu_init();
-
+ 
   strncpy(eeprom.divided.wlan_SSID, MAIN_WLAN_SSID, sizeof(eeprom.divided.wlan_SSID));
   strncpy(eeprom.divided.wlan_password, MAIN_WLAN_PASS, sizeof(eeprom.divided.wlan_password));
+  
   EEPROM_print(&eeprom);
   /*
   strncpy(eeprom.divided.server_url, "www.kungariket.se\0", sizeof(eeprom.divided.server_url));
@@ -160,6 +164,11 @@ int main(void)
     else if (gconnected == NOT_CONNECTED)
     {
       connect_to_ap();
+    }
+
+    if(measureNow == 1)
+    {
+      measure();
     }
 
     HAL_Delay(20); /* prevent 100% cpu usage */

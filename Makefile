@@ -96,8 +96,9 @@ Src/syscalls.c \
 Src/eeprom.c \
 Src/sht40.c \
 Src/rtc_functions.c \
-Drivers/protobuf/testmsg.pb-c.c \
-Drivers/protobuf/protobuf-c.c
+Drivers/protobuf/protobuf-c.c \
+Drivers/protobuf/measure.pb-c.c \
+Src/measure.c
 
 # ASM sources
 ASM_SOURCES =  \
