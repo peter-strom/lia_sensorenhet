@@ -17,13 +17,15 @@ void measure(void)
   measureMsg.humidity = tempHumiditySensor.humidityRH;
   measureMsg.temperature = tempHumiditySensor.temperatureC;
   measureMsg.timestamp = timestamp;
-
+  measureMsg.size = 0x01;
   measureMsg.size = measure__measure_msg__get_packed_size(&measureMsg);
   uint8_t protoBuff[measureMsg.size];
   measure__measure_msg__pack(&measureMsg, &protoBuff);
 
 #ifdef DEBUG_MODE
   printf("size: %d bytes \r\n", measureMsg.size);
+  printf("temperature: %d \r\n",measureMsg.temperature);
+  printf("humidity: %d \r\n",measureMsg.humidity);
   printf("hex: \r\n");
   for (uint8_t i = 0; i < measureMsg.size; i++)
   {
