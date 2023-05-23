@@ -6,10 +6,14 @@
 #include "power.h"
 #include "rtc_functions.h"
 #include "winc.h"
+#include "measure.h"
+
+
+
 
 extern tpfNmBspIsr gpfIsr; // pointer to WINC HIF isr function
 static ButtonMode resetUpdateButton = UPDATE_SETTINGS;
-uint8_t rxBuff[12];
+uint8_t uartRxBuff[12];
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
@@ -47,6 +51,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     {
       char msg[] = "settings_update_request";
       send_socket_message(&msg, sizeof(msg));
+      
+      
 #ifdef DEBUG_MODE
       printf("update_settings!\r\n");
 #endif
@@ -76,6 +82,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim->Instance == htim2.Instance)
   {
+    if(measureNow == 0)
+    {
+      measureNow = 1;
+    }
 #ifdef DEBUG_MODE
     printf("htim2:(timer interval) --- ");
     print_time(&hrtc);
@@ -96,11 +106,11 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 
-  HAL_UART_Receive_IT(&huart2, rxBuff, 1);
+  HAL_UART_Receive_IT(&huart2, uartRxBuff, 1);
 #ifdef DEBUG_MODE
-  // printf("recieved by uart: %d \r\n", rxBuff[0]);
+  // printf("recieved by uart: %d \r\n", uartRxBuff[0]);
 #endif
-  if (rxBuff[0] == 49) // test on
+  if (uartRxBuff[0] == 49) // test on
   {
     HAL_GPIO_WritePin(LED_ON_GPIO_Port, LED_ON_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(LED_ERROR_GPIO_Port, LED_ERROR_Pin, GPIO_PIN_SET);
@@ -110,7 +120,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(FAN_CONTROL_GPIO_Port, FAN_CONTROL_Pin, GPIO_PIN_SET);
   }
-  else if (rxBuff[0] == 48) // test off
+  else if (uartRxBuff[0] == 48) // test off
   {
     HAL_GPIO_WritePin(LED_ON_GPIO_Port, LED_ON_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(LED_ERROR_GPIO_Port, LED_ERROR_Pin, GPIO_PIN_RESET);
@@ -120,11 +130,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(FAN_CONTROL_GPIO_Port, FAN_CONTROL_Pin, GPIO_PIN_RESET);
   }
-  else if (rxBuff[0] == 50) // test reset
+  else if (uartRxBuff[0] == 50) // test reset
   {
     HAL_GPIO_WritePin(LED_ON_GPIO_Port, LED_ON_Pin, GPIO_PIN_SET);
   }
-  else if (rxBuff[0] == 51) // irq-sensor set, shuld be trigged by gpio-interrupt EXTI9_5
+  else if (uartRxBuff[0] == 51) // irq-sensor set, shuld be trigged by gpio-interrupt EXTI9_5
   {
 #ifdef DEBUG_MODE
     printf("sensor_alarm!\r\n");

@@ -9,6 +9,7 @@
 void set_rtc_time(RTC_HandleTypeDef *hrtc, tstrSystemTime *pstrSystemTime);
 uint8_t calc_weekday(uint16_t year, uint8_t month, uint8_t day);
 bool adjus_time(tstrSystemTime *sysTime, int adjHours);
+void get_time(RTC_HandleTypeDef *hrtc, char *dataBuff);
 void print_time(RTC_HandleTypeDef *hrtc);
 void set_DTS(RTC_HandleTypeDef *hrtc);
 

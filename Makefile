@@ -95,7 +95,10 @@ Src/power.c \
 Src/syscalls.c \
 Src/eeprom.c \
 Src/sht40.c \
-Src/rtc_functions.c
+Src/rtc_functions.c \
+Drivers/protobuf/protobuf-c.c \
+Drivers/protobuf/measure.pb-c.c \
+Src/measure.c
 
 # ASM sources
 ASM_SOURCES =  \
@@ -181,8 +184,8 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 LDSCRIPT = STM32L433CCTx_FLASH.ld
 
 # libraries
-LIBS = -lc -lm -lnosys 
-LIBDIR = 
+LIBS = -lc -lm -lnosys
+LIBDIR =
 LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 
 # default action: build all

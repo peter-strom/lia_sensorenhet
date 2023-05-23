@@ -1,0 +1,13 @@
+
+
+  syntax = "proto3";
+
+  package measure;
+
+  message MeasureMsg
+  {
+    uint32 size=1;
+    string timestamp=2;
+    sint32 temperature=3;
+    uint32 humidity=4;
+  }
