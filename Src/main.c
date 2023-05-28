@@ -134,6 +134,8 @@ int main(void)
   strncpy(eeprom.divided.wlan_password, MAIN_WLAN_PASS, sizeof(eeprom.divided.wlan_password));
   
   EEPROM_print(&eeprom);
+    
+   
   /*
   strncpy(eeprom.divided.server_url, "www.kungariket.se\0", sizeof(eeprom.divided.server_url));
   eeprom.divided.server_port = 555;
